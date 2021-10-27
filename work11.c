@@ -6,35 +6,29 @@
 #include <errno.h>
 #include <time.h>
 
-void genrand() {
-	int fd = open("dev/random", O_WRONLY, 0);
-	int x[10];
-	int i = 0;
-	for (i = 0; i < 10; i++) {
-		x[i] = rand();
-
-}
-	write(fd, x, 40);
+int * genrand() {
+	int fd = open("/dev/random", O_RDONLY, 0);
+	int *x = malloc(40);
+	read(fd, x, 40);
+	return x;
 }
 
 int main() {
-	srand(time(NULL));
-	genrand();
-	int fd = open("dev/random", O_RDONLY, 0);
-	int x[10];
-	read(fd, &x, 40);
+	int *x;
+	x = genrand();
 	int i = 0;
-	printf("Reading from original file\n");
 	for (i = 0; i < 10; i++) {
 		printf("%d\n", x[i]);
 	}
-	int fd2 = open("dev/random2", O_RDWR, 0);
+	int fd = open("dev/random", O_WRONLY, 0);
 	printf("Writing to new file\n");
-	write(fd2, x, 40);
+	write(fd, x, 40);
 	printf("Reading from new file\n");
-	read(fd2, x, 40);
+	int fd2 = open("dev/random", O_RDONLY, 0);
+	int *x2 = malloc(40);
+	read(fd2, x2, 40);
 	for (i = 0; i < 10; i++) {
-		printf("%d\n", x[i]);
+		printf("%d\n", x2[i]);
 	}
 	return 0;
 }
