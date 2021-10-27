@@ -6,8 +6,8 @@
 #include <errno.h>
 #include <time.h>
 
-int *genrand() {
-	int fd = open("dev/random.txt", O_RDWR, 0);
+void genrand() {
+	int fd = open("dev/random", O_WRONLY, 0);
 	int x[10];
 	int i = 0;
 	for (i = 0; i < 10; i++) {
@@ -15,13 +15,26 @@ int *genrand() {
 
 }
 	write(fd, x, 40);
-	return x;
 }
 
 int main() {
-	int fd = open("dev/random.txt", O_RDONLY, 0);
-	char x[20];
-	printf("%ld\n", read(fd, x, 24));
-	printf("%s\n", x);
+	srand(time(NULL));
+	genrand();
+	int fd = open("dev/random", O_RDONLY, 0);
+	int x[10];
+	read(fd, &x, 40);
+	int i = 0;
+	printf("Reading from original file\n");
+	for (i = 0; i < 10; i++) {
+		printf("%d\n", x[i]);
+	}
+	int fd2 = open("dev/random2", O_RDWR, 0);
+	printf("Writing to new file\n");
+	write(fd2, x, 40);
+	printf("Reading from new file\n");
+	read(fd2, x, 40);
+	for (i = 0; i < 10; i++) {
+		printf("%d\n", x[i]);
+	}
 	return 0;
 }
